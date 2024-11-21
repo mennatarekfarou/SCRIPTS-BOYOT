@@ -6,7 +6,7 @@ class TestAddBannersToPage(unittest.TestCase):
 
     def setUp(self):
         self.url = "https://community-bac.boyot.app/api/company/add-banners-to-page"
-        self.token = "2480|0SNvMwpH7iWKInhnpaLmHxywfALTp39YZGIxZaQJ3dc55ccd"  # Replace with valid token
+        self.token = "2480|0SNvMwpH7iWKInhnpaLmHxywfALTp39YZGIxZaQJ3dc55ccd"  
         self.faker = Faker()
 
     def send_request(self, payload):

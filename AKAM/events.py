@@ -6,7 +6,7 @@ class TestCreateEvent(unittest.TestCase):
 
     def setUp(self):
         self.url = "https://community-bac.boyot.app/api/company/events"
-        self.token = "2323|S2WGR8YiPowdvdJfnFOpLsZu4zncn9nYs0Srjeu595df1d8b"
+        self.token = "2480|0SNvMwpH7iWKInhnpaLmHxywfALTp39YZGIxZaQJ3dc55ccd"
         self.faker = Faker()
 
     def send_request(self, payload):
