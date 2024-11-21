@@ -18,7 +18,7 @@ class TestCreateViolation(unittest.TestCase):
 
     def print_response(self, response):
         if response.status_code == 201:
-            print("Created ")
+            print("Created")
         else:
             print("ERROR:", response.status_code)
             try:

@@ -154,6 +154,7 @@ class TestCreateFilterGroup(unittest.TestCase):
         self.print_response(response)
         self.assertEqual(response.status_code, 422)  # An empty array might be considered invalid depending on backend logic
 
+
     # Test with additional unexpected fields
     def test_extra_fields_in_payload(self):
         payload = {
