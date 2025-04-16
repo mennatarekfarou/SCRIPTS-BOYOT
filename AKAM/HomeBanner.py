@@ -6,7 +6,7 @@ class TestAddBannersToPage(unittest.TestCase):
 
     def setUp(self):
         self.url = "https://community-bac.boyot.app/api/company/add-banners-to-page"
-        self.token = "2480|0SNvMwpH7iWKInhnpaLmHxywfALTp39YZGIxZaQJ3dc55ccd"  
+        self.token = "2851|4RwXPMypasIqU0H5ICuzqIQY4hwhspZZCxbWJB7qb2c8e2af"  
         self.faker = Faker()
 
     def send_request(self, payload):
@@ -22,8 +22,7 @@ class TestAddBannersToPage(unittest.TestCase):
         else:
             print("ERROR:", response.status_code)
             try:
-                # Attempt to print the error message if available in the response
-                error_message = response.json()  # Attempt to parse the JSON error message
+                error_message = response.json()
                 print("Validation Errors:", error_message)
             except ValueError:
                 print("No error message found in the response")
@@ -32,12 +31,12 @@ class TestAddBannersToPage(unittest.TestCase):
         payload = {
             "banners": [
                 {
-                    "action": "TEST",
-                    "name": "TEST",
+                    "action": "TEST1",
+                    "name": "TEST1",
                     "url": "https://community-bac.boyot.app/attachments/A_1731322244.png"
                 }
             ],
-            "page_id": 3  # Assuming page 3 exists in the system
+            "page_id": 3
         }
         response = self.send_request(payload)
         self.print_response(response)
@@ -45,11 +44,11 @@ class TestAddBannersToPage(unittest.TestCase):
 
     def test_missing_banners(self):
         payload = {
-            "page_id": 3  # Missing 'banners' field
+            "page_id": 3
         }
         response = self.send_request(payload)
         self.print_response(response)
-        self.assertEqual(response.status_code, 400)  # Or 422 based on the backend validation
+        self.assertEqual(response.status_code, 400)
 
     def test_missing_page_id(self):
         payload = {
@@ -63,7 +62,7 @@ class TestAddBannersToPage(unittest.TestCase):
         }
         response = self.send_request(payload)
         self.print_response(response)
-        self.assertEqual(response.status_code, 400)  # Or 422 based on the backend validation
+        self.assertEqual(response.status_code, 400)
 
     def test_invalid_page_id(self):
         payload = {
@@ -74,11 +73,11 @@ class TestAddBannersToPage(unittest.TestCase):
                     "url": "https://community-bac.boyot.app/attachments/A_1731322244.png"
                 }
             ],
-            "page_id": 99999  # Invalid page_id (assuming 99999 doesn't exist)
+            "page_id": 99999
         }
         response = self.send_request(payload)
         self.print_response(response)
-        self.assertEqual(response.status_code, 404)  # Not Found if page does not exist
+        self.assertEqual(response.status_code, 404)
 
     def test_invalid_banner_url(self):
         payload = {
@@ -86,21 +85,21 @@ class TestAddBannersToPage(unittest.TestCase):
                 {
                     "action": "TEST",
                     "name": "TEST",
-                    "url": "invalid-url"  # Invalid image URL
+                    "url": "invalid-url"
                 }
             ],
             "page_id": 3
         }
         response = self.send_request(payload)
         self.print_response(response)
-        self.assertEqual(response.status_code, 400)  # Bad Request for invalid URL
+        self.assertEqual(response.status_code, 400)
 
     def test_invalid_action_or_name(self):
         payload = {
             "banners": [
                 {
-                    "action": "",  # Invalid empty action
-                    "name": "",  # Invalid empty name
+                    "action": "",
+                    "name": "",
                     "url": "https://community-bac.boyot.app/attachments/A_1731322244.png"
                 }
             ],
@@ -108,10 +107,126 @@ class TestAddBannersToPage(unittest.TestCase):
         }
         response = self.send_request(payload)
         self.print_response(response)
-        self.assertEqual(response.status_code, 400)  # Bad Request for empty fields
+        self.assertEqual(response.status_code, 400)
+
+    def test_multiple_banners_addition(self):
+        payload = {
+            "banners": [
+                {
+                    "action": "TEST1",
+                    "name": "Banner 1",
+                    "url": "https://example.com/banner1.png"
+                },
+                {
+                    "action": "TEST2",
+                    "name": "Banner 2",
+                    "url": "https://example.com/banner2.png"
+                }
+            ],
+            "page_id": 3
+        }
+        response = self.send_request(payload)
+        self.print_response(response)
+        self.assertEqual(response.status_code, 201)
+
+    def test_invalid_json_format(self):
+        headers = {
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json"
+        }
+        response = requests.post(self.url, data="invalid json", headers=headers)
+        self.print_response(response)
+        self.assertEqual(response.status_code, 400)
+
+    def test_large_payload(self):
+        banners = [{
+            "action": f"TEST{i}",
+            "name": f"Banner {i}",
+            "url": "https://example.com/banner.png"
+        } for i in range(1, 101)]
+        
+        payload = {
+            "banners": banners,
+            "page_id": 3
+        }
+        response = self.send_request(payload)
+        self.print_response(response)
+        self.assertEqual(response.status_code, 201)
+
+    def test_duplicate_banners(self):
+        payload = {
+            "banners": [
+                {
+                    "action": "TEST",
+                    "name": "TEST",
+                    "url": "https://example.com/banner.png"
+                },
+                {
+                    "action": "TEST",
+                    "name": "TEST",
+                    "url": "https://example.com/banner.png"
+                }
+            ],
+            "page_id": 3
+        }
+        response = self.send_request(payload)
+        self.print_response(response)
+        self.assertEqual(response.status_code, 400)
+
+    def test_special_characters_in_fields(self):
+        payload = {
+            "banners": [
+                {
+                    "action": "!@#$%^&*()_+",
+                    "name": "<Script>alert('test')</Script>",
+                    "url": "https://example.com/banner.png"
+                }
+            ],
+            "page_id": 3
+        }
+        response = self.send_request(payload)
+        self.print_response(response)
+        self.assertEqual(response.status_code, 201)
+
+    def test_rate_limiting(self):
+        for _ in range(10):
+            payload = {
+                "banners": [
+                    {
+                        "action": "TEST",
+                        "name": "TEST",
+                        "url": "https://example.com/banner.png"
+                    }
+                ],
+                "page_id": 3
+            }
+            response = self.send_request(payload)
+            if response.status_code == 429:
+                break
+        self.print_response(response)
+        self.assertEqual(response.status_code, 201)
+
+    def test_expired_token(self):
+        expired_token = "expired_token_example"
+        payload = {
+            "banners": [
+                {
+                    "action": "TEST",
+                    "name": "TEST",
+                    "url": "https://example.com/banner.png"
+                }
+            ],
+            "page_id": 3
+        }
+        headers = {
+            "Authorization": f"Bearer {expired_token}",
+            "Content-Type": "application/json"
+        }
+        response = requests.post(self.url, json=payload, headers=headers)
+        self.print_response(response)
+        self.assertEqual(response.status_code, 401)
 
     def tearDown(self):
-        # Optionally clean up any created resources if needed
         pass
 
 if __name__ == "__main__":
