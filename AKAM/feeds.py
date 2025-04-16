@@ -5,7 +5,7 @@ class TestCreateFeed(unittest.TestCase):
 
     def setUp(self):
         self.url = "https://community-bac.boyot.app/api/company/feeds"
-        self.token = "2464|24ypTRGjtaMA0HsTmc6E0kvLikIUvCAPNLevnQ58053f0f62"
+        self.token = "2851|4RwXPMypasIqU0H5ICuzqIQY4hwhspZZCxbWJB7qb2c8e2af"
         self.headers = {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
